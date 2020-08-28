@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { loginUser } from "../../Action/Action.jsx";
+import { loginUser,googleLogin } from "../../Action/Action.jsx";
 import GoogleLogin from "react-google-login";
 
 import {
@@ -24,6 +24,7 @@ class SignIn extends Component {
       password: "",
       agreement: "",
       errors: {},
+      token:""
     };
   }
 
@@ -44,9 +45,10 @@ class SignIn extends Component {
     }
   }
   handleFormSubmit = (event) => {
-    event.preventDefault();
-    const { email, password } = this.state;
-
+    event.preventDefault();     
+    const { email, password ,token} = this.state; 
+    console.log(token);
+    
     this.setState({
       email: "",
       password: "",
@@ -59,16 +61,23 @@ class SignIn extends Component {
     };
     console.log("****", userData);
     this.props.loginUser(userData);
+    
   };
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
   };
-  responseGoogle = (response) => {
-    console.log("hiii");
-    
-    console.log(response);
+  responseGoogle = (response) => 
+  {
+     const Token = response.tokenId    
+     this.setState({
+          token:Token
+     })
+     let payload ={
+       idToken: Token
+     }
+     this.props.googleLogin(payload);
   };
   render() {
     let { email, password, errors } = this.state;
@@ -102,14 +111,12 @@ class SignIn extends Component {
                         type="email"
                         name="email"
                         value={email}
+                        validators={["required"]}
                         errorMessages={[
                           "this field is required",
                           "email is not valid",
                         ]}
-                        error={errors.email}
-                        // className={classnames('', {
-                        //   invalid: errors.email || errors.emailnotfound,
-                        // })}
+                        error={errors.email}                  
                       />
                       <TextValidator
                         className="input"
@@ -130,29 +137,42 @@ class SignIn extends Component {
                         control={<Checkbox checked />}
                         label="I have read and agree to the terms of service."
                       />
-                      <div className=".submit">
+                      <div className="submit">
                         <div>
-                          <Button
+                          <Button                            
                             variant="contained"
                             color="primary"
                             type="submit"
-                          >
-                            Sign in to Enter Dashboard
-                          </Button>                          
+                          >                     
+                          <span className="MuiButton-label">Sign in</span>
+                          </Button>
                         </div>
-                        <div>
-                            <GoogleLogin
-                              clientId="488281856941-gvmkiu7mv98fnk0mqec4l9edon6869lk.apps.googleusercontent.com"
-                              buttonText="SignIn Via Google"
-                              onSuccess={this.responseGoogle}
-                              onFailure={this.responseGoogle}
-                              cookiePolicy={"single_host_origin"}
-                            />                            
-                          </div>
-                        <span className="or">or</span>
-                        <NavLink exact to={"/sign-up"}>
-                          <Button className="capitalize">Sign in</Button>
-                        </NavLink>
+                        <div className="gglbtn">
+                          <GoogleLogin
+                            clientId="488281856941-gvmkiu7mv98fnk0mqec4l9edon6869lk.apps.googleusercontent.com"
+                            render={(renderProps) => (
+                              <div className="google-btn">
+                                <div className="google-icon-wrapper">
+                                  <img
+                                    className="google-icon"
+                                    src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                                  />
+                                </div>
+                                <p
+                                  onClick={renderProps.onClick}
+                                  disabled={renderProps.disabled}
+                                  className="btn-text"
+                                >
+                                  <b>Sign in with google</b>
+                                </p>         
+                              </div>
+                            )}
+                            buttonText="SignIn Via Google"
+                            onSuccess={this.responseGoogle}
+                            onFailure={this.responseGoogle}
+                            cookiePolicy={"single_host_origin"}
+                          />
+                        </div>
                       </div>
                     </ValidatorForm>
                   </form>
@@ -167,6 +187,7 @@ class SignIn extends Component {
 }
 SignIn.propTypes = {
   loginUser: PropTypes.func.isRequired,
+  googleLogin:PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
 };
@@ -176,4 +197,4 @@ const mapStateToProps = (state) => ({
   errors: state.errors,
 });
 
-export default connect(mapStateToProps, { loginUser })(SignIn);
+export default connect(mapStateToProps, { loginUser,googleLogin })(SignIn);

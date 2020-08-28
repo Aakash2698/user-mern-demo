@@ -1,9 +1,8 @@
 import React, { Component } from "react";
-import { Link, withRouter, NavLink } from "react-router-dom";
+import { withRouter, NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerUser } from "../../Action/Action.jsx";
-
 
 import {
   Card,
@@ -32,19 +31,13 @@ class SignUp extends Component {
       this.props.history.push("/dashboard");
     }
   }
-
   handleChange = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
-  };
-  handleCheckbox(event) {
-    this.setState({agreement: !this.state.agreement});
-  }
-     
+  };     
   handleFormSubmit = (event) => {
-    event.preventDefault();
-    console.log("AGGGG",agreement);
+    event.preventDefault();   
     
     const { username, email, password, agreement } = this.state;
     this.setState({
@@ -58,8 +51,7 @@ class SignUp extends Component {
       email,
       password,
       agreement,
-    };
-    console.log("====>", newUser);
+    };    
     this.props.registerUser(newUser, this.props.history);
   };
   render() {
@@ -121,8 +113,7 @@ class SignUp extends Component {
                       />
                       <FormControlLabel
                         className="pwd"
-                        name="agreement"
-                        onChange={this.handleCheckbox}
+                        name="agreement"                        
                         defaultChecked={this.state.agreement}
                         control={<Checkbox />}
                         label="I have read and agree to the terms of service."

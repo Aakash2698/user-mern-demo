@@ -15,9 +15,7 @@ import PrivateRoute from './components/PrivateRoute/PrivateRoute.jsx'
 import {setCurrentUser} from  './Action/Action.jsx'
 
 let auth_token=localStorage.getItem("jwtToken")
-console.log("---",auth_token);
-
- 
+console.log("---",auth_token); 
 if (auth_token) 
 {  console.log("Move page");
 
